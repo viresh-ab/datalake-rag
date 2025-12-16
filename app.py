@@ -6,7 +6,6 @@ import faiss
 import pickle
 import numpy as np
 from pypdf import PdfReader
-import tiktoken
 from dotenv import load_dotenv
 from openai import OpenAI
 
@@ -102,18 +101,15 @@ def get_item_id_by_path(drive_id, file_path):
 # =====================================================
 # TEXT CHUNKING
 # =====================================================
-def chunk_text(text, size=800, overlap=150):
-    enc = tiktoken.get_encoding("cl100k_base")
-    tokens = enc.encode(text)
-
+def chunk_text(text, size=1000, overlap=200):
     chunks = []
     start = 0
-    while start < len(tokens):
+    while start < len(text):
         end = start + size
-        chunks.append(enc.decode(tokens[start:end]))
-        start += size - overlap
-
+        chunks.append(text[start:end])
+        start = end - overlap
     return chunks
+
 
 # =====================================================
 # INGESTION
@@ -254,3 +250,4 @@ if st.button("🔍 Generate Answer", key="generate_answer_btn"):
 
         st.subheader("✅ Answer")
         st.write(answer)
+
